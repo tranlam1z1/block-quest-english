@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <!-- Giáo viên đứng cạnh bảng -->
+  <rect x="6" y="14" width="66" height="48" rx="4" fill="#166534"/>
+  <rect x="6" y="14" width="66" height="48" rx="4" fill="none" stroke="#a16207" stroke-width="5"/>
+  <text x="39" y="46" text-anchor="middle" font-family="Arial Black, Arial" font-size="20" font-weight="900" fill="#fff">ABC</text>
+  <rect x="72" y="30" width="34" height="34" rx="4" fill="#f5c9a0"/>
+  <rect x="70" y="24" width="38" height="12" rx="3" fill="#3b2414"/>
+  <rect x="80" y="42" width="5" height="7" fill="#1f2937"/>
+  <rect x="93" y="42" width="5" height="7" fill="#1f2937"/>
+  <rect x="84" y="55" width="10" height="3" fill="#9a3412"/>
+  <rect x="68" y="64" width="42" height="40" rx="4" fill="#8b5cf6"/>
+  <rect x="74" y="104" width="12" height="18" fill="#1e3a8a"/>
+  <rect x="92" y="104" width="12" height="18" fill="#1e3a8a"/>
+  <rect x="50" y="62" width="22" height="9" rx="3" fill="#8b5cf6" transform="rotate(-30 60 66)"/>
+  <rect x="42" y="56" width="18" height="4" fill="#92400e" transform="rotate(-30 50 58)"/>
+</svg>

@@ -1,0 +1,44 @@
+{
+  "id": "eu-l1-u2",
+  "bookId": "everybody-up",
+  "gradeId": "level-1",
+  "number": 2,
+  "title": "My Family",
+  "titleVi": "Gia đình của em",
+  "vocab": [
+    { "id": "mother", "en": "mother", "vi": "mẹ", "image": "👩" },
+    { "id": "father", "en": "father", "vi": "bố", "image": "👨" },
+    { "id": "sister", "en": "sister", "vi": "chị / em gái", "image": "👧" },
+    { "id": "brother", "en": "brother", "vi": "anh / em trai", "image": "👦" },
+    { "id": "grandmother", "en": "grandmother", "vi": "bà", "image": "👵" },
+    { "id": "grandfather", "en": "grandfather", "vi": "ông", "image": "👴" },
+    { "id": "baby", "en": "baby", "vi": "em bé", "image": "👶" },
+    { "id": "family", "en": "family", "vi": "gia đình", "image": "/images/words/family.svg" }
+  ],
+  "patterns": [
+    {
+      "id": "p1", "q": "Who's she?", "a": "She's my mother.",
+      "vi": "Cô ấy là ai? – Đó là mẹ mình.",
+      "image": "👩",
+      "blanks": [{ "w": "mother", "wrong": ["father", "brother", "grandfather"] }, { "w": "She's", "wrong": ["He's", "I'm", "Who's"] }]
+    },
+    {
+      "id": "p2", "q": "Who's he?", "a": "He's my father.",
+      "vi": "Chú ấy là ai? – Đó là bố mình.",
+      "image": "👨",
+      "blanks": [{ "w": "father", "wrong": ["mother", "sister", "grandmother"] }, { "w": "Who's", "wrong": ["What's", "Is", "It's"] }]
+    },
+    {
+      "id": "p3", "q": "Is she your sister?", "a": "Yes, she is.",
+      "vi": "Bạn ấy có phải chị/em gái của bạn không? – Đúng vậy.",
+      "image": "👧",
+      "blanks": [{ "w": "sister", "wrong": ["brother", "father", "grandfather"] }]
+    },
+    {
+      "id": "p4", "q": "Is he your brother?", "a": "No, he isn't. He's my father.",
+      "vi": "Đó có phải anh/em trai của bạn không? – Không phải. Đó là bố mình.",
+      "image": "👨",
+      "blanks": [{ "w": "isn't", "wrong": ["is", "am", "are"] }]
+    }
+  ]
+}

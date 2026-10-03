@@ -1,0 +1,46 @@
+{
+  "id": "gs-g3-u3",
+  "bookId": "global-success",
+  "gradeId": "grade-3",
+  "number": 3,
+  "title": "Our friends",
+  "titleVi": "Bạn bè của chúng mình",
+  "vocab": [
+    { "id": "friend", "en": "friend", "vi": "bạn", "image": "/images/words/friends.svg" },
+    { "id": "classmate", "en": "classmate", "vi": "bạn cùng lớp", "image": "🎒" },
+    { "id": "school", "en": "school", "vi": "trường học", "image": "🏫" },
+    { "id": "this", "en": "this", "vi": "đây (gần)", "image": "👇" },
+    { "id": "that", "en": "that", "vi": "kia (xa)", "image": "👉" },
+    { "id": "yes", "en": "yes", "vi": "vâng, đúng", "image": "✅" },
+    { "id": "no", "en": "no", "vi": "không", "image": "❌" },
+    { "id": "he", "en": "he", "vi": "bạn ấy (nam)", "image": "👦" },
+    { "id": "she", "en": "she", "vi": "bạn ấy (nữ)", "image": "👧" }
+  ],
+  "patterns": [
+    {
+      "id": "p1", "q": "This is Mary.", "a": "Hello, Mary.",
+      "vi": "Đây là Mary. – Chào Mary.",
+      "blanks": [{ "w": "Hello", "wrong": ["Yes", "She", "No"] }]
+    },
+    {
+      "id": "p2", "q": "Is this Lucy?", "a": "Yes, it is.",
+      "vi": "Đây có phải Lucy không? – Đúng vậy.",
+      "blanks": [{ "w": "Yes", "wrong": ["Hello", "He", "She"] }]
+    },
+    {
+      "id": "p3", "q": "Is that Minh?", "a": "No, it isn't.",
+      "vi": "Kia có phải Minh không? – Không phải.",
+      "blanks": [{ "w": "isn't", "wrong": ["is", "are", "am"] }]
+    },
+    {
+      "id": "p4", "q": "Who's that?", "a": "It's Ben. He's my friend.",
+      "vi": "Kia là ai? – Đó là Ben. Bạn ấy là bạn của mình.",
+      "blanks": [{ "w": "friend", "wrong": ["school", "yes", "this"] }, { "w": "Who's", "wrong": ["Is", "Yes", "Hello"] }]
+    },
+    {
+      "id": "p5", "q": "Is he your friend?", "a": "Yes, he is.",
+      "vi": "Bạn ấy có phải bạn của bạn không? – Đúng vậy.",
+      "blanks": [{ "w": "he", "wrong": ["she", "you", "I"] }]
+    }
+  ]
+}

@@ -1,0 +1,46 @@
+{
+  "id": "gs-g3-u2",
+  "bookId": "global-success",
+  "gradeId": "grade-3",
+  "number": 2,
+  "title": "Our names",
+  "titleVi": "Tên của chúng mình",
+  "vocab": [
+    { "id": "name", "en": "name", "vi": "tên", "image": "🏷️" },
+    { "id": "years-old", "en": "years old", "vi": "tuổi", "image": "🎂" },
+    { "id": "one", "en": "one", "vi": "số một", "image": "1️⃣" },
+    { "id": "two", "en": "two", "vi": "số hai", "image": "2️⃣" },
+    { "id": "three", "en": "three", "vi": "số ba", "image": "3️⃣" },
+    { "id": "four", "en": "four", "vi": "số bốn", "image": "4️⃣" },
+    { "id": "five", "en": "five", "vi": "số năm", "image": "5️⃣" },
+    { "id": "six", "en": "six", "vi": "số sáu", "image": "6️⃣" },
+    { "id": "seven", "en": "seven", "vi": "số bảy", "image": "7️⃣" },
+    { "id": "eight", "en": "eight", "vi": "số tám", "image": "8️⃣" },
+    { "id": "nine", "en": "nine", "vi": "số chín", "image": "9️⃣" },
+    { "id": "ten", "en": "ten", "vi": "số mười", "image": "🔟" }
+  ],
+  "patterns": [
+    {
+      "id": "p1", "q": "What's your name?", "a": "My name's Linh.",
+      "vi": "Bạn tên là gì? – Mình tên là Linh.",
+      "blanks": [{ "w": "name", "wrong": ["old", "spell", "eight"] }]
+    },
+    {
+      "id": "p2", "q": "How old are you?", "a": "I'm eight years old.",
+      "vi": "Bạn bao nhiêu tuổi? – Mình tám tuổi.",
+      "image": "8️⃣",
+      "blanks": ["eight", { "w": "old", "wrong": ["name", "spell", "you"] }]
+    },
+    {
+      "id": "p3", "q": "How do you spell your name?", "a": "L-I-N-H.",
+      "vi": "Bạn đánh vần tên mình thế nào? – L-I-N-H.",
+      "blanks": [{ "w": "spell", "wrong": ["old", "eight", "are"] }]
+    },
+    {
+      "id": "p4", "q": "Are you ten?", "a": "No, I'm not. I'm nine.",
+      "vi": "Bạn mười tuổi phải không? – Không phải. Mình chín tuổi.",
+      "image": "9️⃣",
+      "blanks": ["nine", { "w": "not", "wrong": ["old", "ten", "name"] }]
+    }
+  ]
+}

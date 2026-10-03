@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <!-- Bàn học dạng khối -->
+  <rect x="10" y="38" width="108" height="14" rx="3" fill="#b45309"/>
+  <rect x="10" y="38" width="108" height="5" rx="2" fill="#d97706"/>
+  <rect x="16" y="52" width="12" height="56" fill="#92400e"/>
+  <rect x="100" y="52" width="12" height="56" fill="#92400e"/>
+  <rect x="64" y="52" width="40" height="30" fill="#a16207"/>
+  <rect x="78" y="64" width="12" height="5" rx="2" fill="#fde68a"/>
+  <rect x="30" y="24" width="26" height="14" rx="2" fill="#ef4444"/>
+  <rect x="34" y="18" width="22" height="6" rx="2" fill="#3b82f6"/>
+</svg>

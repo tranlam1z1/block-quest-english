@@ -1,0 +1,45 @@
+{
+  "id": "eu-l1-u1",
+  "bookId": "everybody-up",
+  "gradeId": "level-1",
+  "number": 1,
+  "title": "My Classroom",
+  "titleVi": "Lớp học của em",
+  "vocab": [
+    { "id": "book", "en": "book", "vi": "quyển sách", "image": "📕" },
+    { "id": "pencil", "en": "pencil", "vi": "bút chì", "image": "✏️" },
+    { "id": "pen", "en": "pen", "vi": "bút mực", "image": "🖊️" },
+    { "id": "eraser", "en": "eraser", "vi": "cục tẩy", "image": "/images/words/eraser.svg" },
+    { "id": "bag", "en": "bag", "vi": "cặp sách", "image": "🎒" },
+    { "id": "desk", "en": "desk", "vi": "bàn học", "image": "/images/words/desk.svg" },
+    { "id": "chair", "en": "chair", "vi": "cái ghế", "image": "🪑" },
+    { "id": "ruler", "en": "ruler", "vi": "thước kẻ", "image": "📏" },
+    { "id": "crayon", "en": "crayon", "vi": "bút sáp màu", "image": "🖍️" }
+  ],
+  "patterns": [
+    {
+      "id": "p1", "q": "What's this?", "a": "It's a pencil.",
+      "vi": "Đây là cái gì? – Đó là cái bút chì.",
+      "image": "✏️",
+      "blanks": ["pencil", { "w": "What's", "wrong": ["Who's", "Is", "Yes"] }]
+    },
+    {
+      "id": "p2", "q": "Is it a pen?", "a": "Yes, it is.",
+      "vi": "Nó có phải cái bút mực không? – Đúng vậy.",
+      "image": "🖊️",
+      "blanks": [{ "w": "Yes", "wrong": ["No", "What", "It's"] }, "pen"]
+    },
+    {
+      "id": "p3", "q": "Is it a book?", "a": "No, it isn't. It's a bag.",
+      "vi": "Nó có phải quyển sách không? – Không phải. Đó là cái cặp.",
+      "image": "🎒",
+      "blanks": ["bag", { "w": "isn't", "wrong": ["is", "am", "are"] }]
+    },
+    {
+      "id": "p4", "q": "What color is it?", "a": "It's red.",
+      "vi": "Nó màu gì? – Nó màu đỏ.",
+      "image": "🟥",
+      "blanks": [{ "w": "red", "wrong": ["blue", "green", "yellow"] }, { "w": "color", "wrong": ["this", "pen", "is"] }]
+    }
+  ]
+}

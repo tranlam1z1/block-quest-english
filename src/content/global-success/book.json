@@ -1,0 +1,14 @@
+{
+  "id": "global-success",
+  "name": "Global Success",
+  "description": "Tiếng Anh theo SGK – Lớp 1 đến Lớp 4",
+  "color": "#f97316",
+  "emoji": "📘",
+  "sort": 1,
+  "grades": [
+    { "id": "grade-1", "name": "Lớp 1" },
+    { "id": "grade-2", "name": "Lớp 2" },
+    { "id": "grade-3", "name": "Lớp 3" },
+    { "id": "grade-4", "name": "Lớp 4" }
+  ]
+}

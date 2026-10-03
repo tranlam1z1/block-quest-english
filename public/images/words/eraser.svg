@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <!-- Cục tẩy dạng khối -->
+  <g transform="rotate(-20 64 64)">
+    <rect x="18" y="44" width="92" height="44" rx="8" fill="#f472b6"/>
+    <rect x="18" y="44" width="40" height="44" rx="8" fill="#38bdf8"/>
+    <rect x="50" y="44" width="10" height="44" fill="#38bdf8"/>
+    <rect x="18" y="80" width="92" height="8" rx="4" fill="#000" opacity=".15"/>
+    <rect x="66" y="52" width="34" height="8" rx="4" fill="#fff" opacity=".5"/>
+  </g>
+</svg>

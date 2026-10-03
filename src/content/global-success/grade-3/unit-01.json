@@ -1,0 +1,42 @@
+{
+  "id": "gs-g3-u1",
+  "bookId": "global-success",
+  "gradeId": "grade-3",
+  "number": 1,
+  "title": "Hello",
+  "titleVi": "Xin chào",
+  "vocab": [
+    { "id": "hello", "en": "hello", "vi": "xin chào", "image": "👋", "group": "greet" },
+    { "id": "hi", "en": "hi", "vi": "chào (thân mật)", "image": "🙋", "group": "greet" },
+    { "id": "goodbye", "en": "goodbye", "vi": "tạm biệt", "image": null, "group": "bye" },
+    { "id": "bye", "en": "bye", "vi": "tạm biệt (thân mật)", "image": null, "group": "bye" },
+    { "id": "fine", "en": "fine", "vi": "khỏe", "image": "💪" },
+    { "id": "thank-you", "en": "thank you", "vi": "cảm ơn", "image": "🙏" },
+    { "id": "boy", "en": "boy", "vi": "bạn nam", "image": "👦" },
+    { "id": "girl", "en": "girl", "vi": "bạn nữ", "image": "👧" },
+    { "id": "teacher", "en": "teacher", "vi": "giáo viên", "image": "/images/words/teacher.svg" },
+    { "id": "nice-to-meet-you", "en": "nice to meet you", "vi": "rất vui được gặp bạn", "image": "🤝" }
+  ],
+  "patterns": [
+    {
+      "id": "p1", "q": "Hello. I'm Mai.", "a": "Hi, Mai. I'm Ben.",
+      "vi": "Xin chào. Mình là Mai. – Chào Mai. Mình là Ben.",
+      "blanks": [{ "w": "Hello", "wrong": ["Fine", "Thank", "Bye"] }]
+    },
+    {
+      "id": "p2", "q": "How are you?", "a": "I'm fine, thank you.",
+      "vi": "Bạn khỏe không? – Mình khỏe, cảm ơn bạn.",
+      "blanks": [{ "w": "fine", "wrong": ["hello", "goodbye", "meet"] }, { "w": "How", "wrong": ["What", "Who", "Bye"] }]
+    },
+    {
+      "id": "p3", "q": "Goodbye, Nam.", "a": "Bye, Mai. See you later.",
+      "vi": "Tạm biệt Nam. – Tạm biệt Mai. Hẹn gặp lại.",
+      "blanks": [{ "w": "later", "wrong": ["fine", "you", "hello"] }, { "w": "See", "wrong": ["Thank", "How", "Meet"] }]
+    },
+    {
+      "id": "p4", "q": "Nice to meet you.", "a": "Nice to meet you, too.",
+      "vi": "Rất vui được gặp bạn. – Mình cũng rất vui được gặp bạn.",
+      "blanks": [{ "w": "meet", "wrong": ["fine", "see", "thank"] }]
+    }
+  ]
+}
