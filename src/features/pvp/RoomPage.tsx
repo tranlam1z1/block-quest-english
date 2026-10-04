@@ -8,6 +8,7 @@ import { rankOf } from '../../game/duel';
 import type { PeerInfo } from '../../net/transport';
 import { stopSpeaking } from '../../services/speech';
 import { useBattle } from '../../stores/battle';
+import { PVP_EMOTES } from '../../stores/emotes';
 import { useProgress } from '../../stores/progress';
 import { useRoom } from '../../stores/room';
 import { Button, Modal, SoundToggles, TopBar } from '../../components/ui';
@@ -243,6 +244,26 @@ function Countdown() {
   );
 }
 
+/** Nút biểu cảm: nhân vật của em làm hành động, bạn kia cũng thấy */
+function EmoteBar() {
+  const emote = useRoom((s) => s.emote);
+  return (
+    <div className="absolute bottom-6 lg:bottom-3 left-2 flex gap-1">
+      {PVP_EMOTES.map((e) => (
+        <button
+          key={e.kind}
+          onClick={() => emote(e.kind)}
+          title={e.label}
+          aria-label={e.label}
+          className="h-10 w-10 rounded-xl bg-white/90 border-b-4 border-slate-300 text-xl active:translate-y-0.5"
+        >
+          {e.emoji}
+        </button>
+      ))}
+    </div>
+  );
+}
+
 function MatchView() {
   const phase = useBattle((s) => s.phase);
   const duel = useBattle((s) => s.duel);
@@ -258,6 +279,7 @@ function MatchView() {
           <DuelScene />
         </Suspense>
         <DuelHud onPause={() => setMenuOpen(true)} />
+        <EmoteBar />
       </div>
 
       <div className="flex-1 lg:flex-none lg:w-[480px] overflow-y-auto bg-white/95 rounded-t-3xl lg:rounded-none lg:rounded-l-3xl -mt-4 lg:mt-0 relative z-10 p-3 sm:p-5 shadow-[0_-6px_20px_rgba(0,0,0,0.1)]">

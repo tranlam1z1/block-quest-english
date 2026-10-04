@@ -12,6 +12,7 @@ import { CameraRig, Scenery } from './World';
 import { Fireworks, Particles } from './effects/Particles';
 import { ease } from './Voxel';
 import { GemDrop } from './Gem3D';
+import { playerMood } from './mood';
 
 const PLAYER_POS: [number, number, number] = [-2.2, 0, 0];
 const MONSTER_POS: [number, number, number] = [2.2, 0, 0];
@@ -74,7 +75,7 @@ export function BattleScene() {
     <Canvas shadows="percentage" dpr={[1, 2]} camera={{ fov: 45, position: [0, 2.6, 7.2] }} gl={{ antialias: true }}>
       <Scenery />
       <CameraRig getFx={getFx} />
-      <VoxelCharacter avatar={avatar} position={PLAYER_POS} facing={0.7} getFx={getFx} />
+      <VoxelCharacter avatar={avatar} position={PLAYER_POS} facing={0.7} getFx={getFx} getMood={playerMood} />
       {monster && <VoxelMonster key={monster.name + monster.tier} monster={monster} position={MONSTER_POS} facing={-0.6} getFx={getFx} />}
       <Projectile />
       <GemDrop position={MONSTER_POS} />

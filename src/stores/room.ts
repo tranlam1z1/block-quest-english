@@ -6,6 +6,7 @@
 //  - 'ack'   (khách → chủ phòng): đã nhận câu hỏi
 //  - 'state' (hai chiều): toàn bộ câu trả lời của mình + câu đã bấm "tiếp".
 //    Gửi lại định kỳ nên lỡ mất 1 tin cũng không sao.
+//  - 'emote' (hai chiều): người chơi bấm nút biểu cảm (vẫy tay, cười…). Lỡ mất thì thôi.
 // ============================================================
 import { create } from 'zustand';
 import { getUnit } from '../content';
@@ -15,6 +16,7 @@ import type { Question } from '../game/questions/types';
 import { createTransport, onlineConfigured, type NetMessage, type PeerInfo, type Transport } from '../net/transport';
 import { speechSupported } from '../services/speech';
 import { useBattle, type RoundAnswer } from './battle';
+import { isEmoteKind, playEmote, useEmotes, type EmoteKind } from './emotes';
 import { useProgress } from './progress';
 import { enabledTypeList, useSettings } from './settings';
 
@@ -22,6 +24,8 @@ export type RoomStatus = 'idle' | 'connecting' | 'lobby' | 'error';
 
 /** Đếm ngược trước khi vào trận (ms) */
 export const COUNTDOWN_MS = 3000;
+/** Khoảng cách tối thiểu giữa 2 lần bấm biểu cảm (ms) */
+const EMOTE_COOLDOWN_MS = 1200;
 
 interface RoomState {
   status: RoomStatus;
@@ -55,6 +59,8 @@ interface RoomState {
   startMatch: () => boolean;
   /** Rời màn trận về sảnh chờ của phòng */
   backToLobby: () => void;
+  /** Bấm nút biểu cảm: nhân vật của mình làm hành động, bạn cũng thấy */
+  emote: (kind: EmoteKind) => void;
 }
 
 let transport: Transport | null = null;
@@ -150,6 +156,8 @@ function onMessage(m: NetMessage) {
     clearTimeout(countdownTimer);
     useRoom.setState({ countdownEnd: null });
     useBattle.getState().abortRemote();
+  } else if (m.type === 'emote' && m.matchId === s.matchId && isEmoteKind(m.kind)) {
+    playEmote('opp', m.kind);
   } else if (m.type === 'state' && m.matchId === s.matchId) {
     if (s.role === 'host') {
       clearInterval(resendStart);
@@ -250,6 +258,14 @@ export const useRoom = create<RoomState>()((set, get) => ({
     if (d?.remote && d.matchId === get().matchId && !d.outcome && !d.aborted) send({ type: 'quit', matchId: d.matchId });
     useBattle.getState().abortRemote();
     set({ matchId: null, countdownEnd: null });
+  },
+
+  emote: (kind) => {
+    const { matchId } = get();
+    const last = useEmotes.getState().me;
+    if (!matchId || (last && performance.now() - last.at < EMOTE_COOLDOWN_MS)) return;
+    playEmote('me', kind);
+    send({ type: 'emote', matchId, kind });
   },
 }));
 

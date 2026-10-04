@@ -8,6 +8,7 @@ import { VoxelCharacter } from './VoxelCharacter';
 import { CameraRig, Scenery } from './World';
 import { Fireworks, Particles } from './effects/Particles';
 import { Projectile } from './BattleScene';
+import { oppMood, playerMood } from './mood';
 
 const PLAYER_X = -2.2;
 const BOT_X = 2.2;
@@ -37,8 +38,8 @@ export function DuelScene() {
     <Canvas shadows="percentage" dpr={[1, 2]} camera={{ fov: 45, position: [0, 2.6, 7.2] }} gl={{ antialias: true }}>
       <Scenery />
       <CameraRig getFx={getFx} />
-      <VoxelCharacter avatar={avatar} position={[PLAYER_X, 0, 0]} facing={0.7} getFx={getFx} />
-      {opp && <VoxelCharacter key={opp.key} avatar={opp.avatar} position={[BOT_X, 0, 0]} facing={-0.7} getFx={getBotFx} dir={-1} />}
+      <VoxelCharacter avatar={avatar} position={[PLAYER_X, 0, 0]} facing={0.7} getFx={getFx} getMood={playerMood} />
+      {opp && <VoxelCharacter key={opp.key} avatar={opp.avatar} position={[BOT_X, 0, 0]} facing={-0.7} getFx={getBotFx} getMood={oppMood} dir={-1} />}
       <Projectile kind="playerAttack" from={PLAYER_X + 0.9} to={BOT_X} />
       <Projectile kind="monsterAttack" from={BOT_X - 0.9} to={PLAYER_X} colors={['#fecaca', '#f43f5e']} />
       <Particles />

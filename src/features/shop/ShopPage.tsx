@@ -5,6 +5,7 @@
 import { Suspense, lazy, useMemo, useState } from 'react';
 import { COSMETICS, RARITY, SLOT_LABEL, type Cosmetic, type Slot } from '../../game/cosmetics';
 import { playSfx } from '../../services/audio';
+import { playEmote } from '../../stores/emotes';
 import { useProgress } from '../../stores/progress';
 import { Button, Modal, TopBar } from '../../components/ui';
 import { Coin, GoldBadge } from '../../components/icons';
@@ -56,6 +57,7 @@ export function ShopPage() {
     if (buy(tryOn.id)) {
       equip(tryOn.slot, tryOn.id);
       playSfx('win');
+      playEmote('me', 'cheer');
       setMsg(`🎉 Bạn đã mua “${tryOn.name}”!`);
       setTryOn(null);
     }
