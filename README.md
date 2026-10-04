@@ -102,14 +102,14 @@ Chưa làm bước này thì "Solo với bạn" ở **chế độ thử**: chỉ
    ```
 4. Tắt game (đóng cửa sổ đen) rồi mở lại `Chay game.bat`. Thông báo "chế độ thử" sẽ biến mất.
 
-- Không cần tạo bảng dữ liệu: game chỉ dùng **Realtime** (kênh phát tin và danh sách người trong phòng).
+- "Solo với bạn" không cần tạo bảng dữ liệu: game chỉ dùng **Realtime** (kênh phát tin và danh sách người trong phòng). Muốn học sinh **luyện tập ở nhà** thì làm thêm mục **🏠 Cho học sinh luyện tập ở nhà** (có tạo bảng).
 - Nếu vẫn không kết nối được, vào **Project Settings → Realtime** và kiểm tra mục cho phép kênh công khai (*Allow public access*) đang bật.
 - Khóa anon là khóa công khai, được phép nằm trong trang web. **Không** dán khóa `service_role` vào game.
 - Các máy chơi cần có Internet, nhưng không bắt buộc cùng Wi-Fi.
 
 ## ✅ Giai đoạn 5 — đã hoàn thành
 
-**🎓 Khu vực giáo viên** (Trang chủ → Giáo viên). Lần đầu vào, thầy cô đặt một **mã PIN 4–8 chữ số** để học sinh không vào sửa được.
+**🎓 Khu vực giáo viên** (Trang chủ → Giáo viên). Lần đầu vào, thầy cô đặt một **mã PIN 4–8 chữ số** để học sinh không vào sửa được. (Khi dùng Supabase, PIN gồm 6–8 chữ số và được đặt bằng script, xem mục 🏠.)
 
 - **📚 Bài học**
   - Xem toàn bộ Bộ sách → Lớp → Unit. Thêm bộ sách mới, thêm lớp, thêm unit.
@@ -130,7 +130,7 @@ Chưa làm bước này thì "Solo với bạn" ở **chế độ thử**: chỉ
   - Mất mạng thì kết quả được giữ trên máy học sinh và tự gửi lại sau.
 - Trang chủ có nút **đặt tên** cho học sinh (nhấp nháy khi chưa có tên), để thầy cô biết kết quả là của em nào.
 
-**Dữ liệu lưu ở đâu?** Trong thư mục **`data/`** của game trên máy tính của thầy cô:
+**Dữ liệu lưu ở đâu?** Đã làm mục **🏠 Cho học sinh luyện tập ở nhà** thì dữ liệu lưu trên **Supabase**. Khi đó thư mục `data/` chỉ còn giữ bản sao kết quả phòng luyện tập và hàng chờ gửi lên Supabase (`cloud-outbox.jsonl`). Chưa làm mục đó thì dữ liệu nằm trong thư mục **`data/`** của game trên máy tính của thầy cô:
 
 | File | Nội dung |
 |---|---|
@@ -178,6 +178,8 @@ Chưa làm bước này thì "Solo với bạn" ở **chế độ thử**: chỉ
 
 - Mở game bằng **`Chay game.bat`** trên máy của thầy cô (máy nối với máy chiếu / TV).
 - Máy học sinh dùng **cùng mạng Wi-Fi** với máy đó. **Không cần Internet** và không cần Supabase.
+- Phòng **không mở được từ đường link trên Internet** (Vercel). Game sẽ báo "Phòng luyện tập trên lớp chỉ dùng được khi mở game bằng Chay game.bat trên máy thầy cô".
+- Có dùng Supabase (file `.env.local`): phòng dùng **mã PIN trên Supabase**. Kết quả phòng được gửi thêm lên Supabase. Mất Internet thì phòng vẫn chạy: kết quả nằm chờ và tự gửi sau, PIN được so với lần đăng nhập đúng gần nhất trên máy này.
 - Mã QR tự dùng địa chỉ mạng nội bộ của máy thầy cô (VD `192.168.1.179:4173`). Máy có nhiều mạng (VD có cài VPN) thì dưới mã QR có các địa chỉ khác để chọn.
 - Học sinh không vào được: kiểm tra lại Wi-Fi, và cho phép Node.js trong Windows Firewall (**Allow / Cho phép** ở mạng *Private*).
 - Mỗi phòng tối đa 60 học sinh. Phòng chỉ tồn tại khi game đang chạy: tắt `Chay game.bat` là phòng đóng.
@@ -209,7 +211,10 @@ Chưa làm bước này thì "Solo với bạn" ở **chế độ thử**: chỉ
 - **Thưởng**: lần nộp đầu tiên được 3 vàng mỗi câu đúng, thêm 10 vàng nếu đạt từ 7 điểm hoặc 20 vàng nếu đạt từ 9 điểm. Đạt **từ 9 điểm** thì **lần thắng quái kế tiếp được +20% cơ hội rơi Ngọc Rồng** (mỗi bài 1 lần).
 - Phải đặt tên trước khi làm bài, để thầy cô biết bài của ai.
 
-**Không cần mạng khi làm bài**: máy học sinh tải bài về mỗi khi mở game lúc dùng chung Wi-Fi với máy thầy cô, và **lưu lại trên máy**. Làm bài khi không có mạng thì kết quả nằm chờ trên máy và **tự gửi về** khi kết nối lại được.
+**Làm bài khi mất mạng vẫn được**: mỗi lần mở game có kết nối, máy học sinh tải bài mới về và **lưu lại trên máy**. Làm bài khi không có mạng thì kết quả nằm chờ trên máy và **tự gửi về** khi có mạng lại.
+
+- Đã làm mục **🏠 Cho học sinh luyện tập ở nhà** (bên dưới): "có kết nối" nghĩa là có **Internet**, ở nhà hay ở lớp đều được.
+- Chưa làm mục đó: "có kết nối" nghĩa là **dùng chung Wi-Fi với máy thầy cô** đang chạy `Chay game.bat`.
 
 ### 👪 Phụ huynh xem kết quả
 
@@ -224,9 +229,112 @@ Chưa làm bước này thì "Solo với bạn" ở **chế độ thử**: chỉ
   - Mỗi em 1 trang A4: số ngày luyện tập, tỉ lệ đúng, bài tập về nhà (đúng hạn / muộn / chưa làm, điểm), kết quả theo bài, từ cần ôn, ô nhận xét của giáo viên và chỗ ký.
   - Chọn khoảng 7 ngày / 30 ngày / 3 tháng. Bấm **🖨️ In / Lưu PDF** để in cả lớp, hoặc lưu PDF gửi phụ huynh qua Zalo.
 
-> **Lưu ý:** máy học sinh chỉ nhận bài mới và gửi kết quả khi **dùng chung Wi-Fi với máy thầy cô** (máy đang chạy `Chay game.bat`). Thường thì các em mở game ở lớp một lần để nhận bài, về nhà làm (không cần mạng), hôm sau đến lớp thì kết quả tự gửi về. Nếu máy ở nhà không bao giờ vào Wi-Fi của lớp, thầy cô dùng **Phiếu kết quả** để báo cho phụ huynh.
+> **Lưu ý:** nếu **chưa** làm mục 🏠 bên dưới, máy học sinh chỉ nhận bài mới và gửi kết quả khi **dùng chung Wi-Fi với máy thầy cô**. Các em phải mở game ở lớp để nhận bài, và kết quả chỉ về tới thầy cô khi máy quay lại Wi-Fi của lớp. Muốn học sinh **mở game ở nhà, nhận bài và nộp bài qua Internet**, thầy cô làm mục **🏠 Cho học sinh luyện tập ở nhà** (làm 1 lần, khoảng 20 phút).
 
 ---
+
+## 🏠 Cho học sinh luyện tập ở nhà
+
+Làm xong mục này, game có **một đường link trên Internet** (dạng `https://ten-game.vercel.app`):
+
+- Học sinh mở link trên điện thoại, máy tính bảng hay máy tính ở nhà, **cài như ứng dụng**, và chơi được cả khi mất mạng (sau lần mở đầu tiên).
+- **Bài học, bài tập về nhà, thống kê và mã PIN giáo viên** được lưu trên Supabase (máy chủ Internet miễn phí), không còn nằm trong thư mục `data/`. Kết quả là:
+  - học sinh ở nhà nhận bài mới và nộp bài;
+  - thầy cô xem thống kê, giao bài từ **bất kỳ máy nào** có Internet;
+  - Góc phụ huynh trên máy của con xem được kết quả.
+- **Phòng luyện tập trên lớp** vẫn chạy như cũ: mở bằng `Chay game.bat` trên máy thầy cô, học sinh dùng cùng Wi-Fi. Kết quả của phòng được gửi thêm lên Supabase để thống kê gộp chung một chỗ.
+
+Thầy cô cần: một tài khoản **Supabase**, một tài khoản **GitHub**, một tài khoản **Vercel**. Cả ba đều miễn phí.
+
+### Bước 1. Tạo dự án Supabase
+
+**Đã làm mục "🌐 Bật chơi qua Internet"** (Solo với bạn) thì **dùng luôn dự án đó**, chuyển sang bước 2.
+
+Chưa làm thì:
+
+1. Vào <https://supabase.com>, đăng ký, bấm **New project**. Đặt tên tùy ý, chọn khu vực **Southeast Asia (Singapore)**, đặt mật khẩu cơ sở dữ liệu (ghi lại, ít khi dùng tới).
+2. Khi dự án tạo xong, vào **Project Settings → API Keys** (hoặc **API**), ghi lại 3 thông tin:
+   - **Project URL**, dạng `https://xxxx.supabase.co`;
+   - khóa **công khai**: tên là `anon` / `public`, hoặc `publishable` (bắt đầu bằng `sb_publishable_`);
+   - khóa **bí mật**: tên là `service_role`, hoặc `secret` (bắt đầu bằng `sb_secret_`).
+3. Trong thư mục game, chép file `.env.example` thành **`.env.local`**. Mở bằng Notepad, dán Project URL và khóa **công khai** vào.
+
+> ⚠️ **Khóa bí mật** (`service_role` / `secret`) có toàn quyền với dữ liệu. Chỉ dán khóa này vào file `.env.server.local` ở bước 3. **Không** dán vào `.env.local`, **không** khai báo trên Vercel, **không** gửi cho ai.
+
+### Bước 2. Tạo bảng dữ liệu (chạy SQL)
+
+1. Trong Supabase, mở **SQL Editor** (biểu tượng `>_` ở thanh bên trái), bấm **New query**.
+2. Mở file `supabase/migrations/0001_init.sql` (trong thư mục game) bằng Notepad, chọn tất cả (Ctrl+A), chép và dán vào ô SQL.
+3. Bấm **Run**. Thấy *Success. No rows returned* là xong.
+
+Chạy lại file này lần nữa cũng không sao, dữ liệu không bị mất.
+
+### Bước 3. Đặt mã PIN và chuyển dữ liệu cũ lên
+
+Vì game nằm trên Internet nên **mã PIN đầu tiên không đặt được trên trang web**: ai mở link trước sẽ chiếm quyền giáo viên. Thầy cô đặt PIN trên máy tính của mình:
+
+1. Trong thư mục game, chép file `.env.server.example` thành **`.env.server.local`**. Mở bằng Notepad, dán Project URL và **khóa bí mật**.
+2. Mở cửa sổ lệnh ngay trong thư mục game: bấm vào thanh địa chỉ của thư mục, gõ `cmd` rồi Enter.
+3. Gõ lệnh sau rồi Enter:
+   ```
+   node scripts/setup-supabase.mjs
+   ```
+4. Nhập **mã PIN giáo viên gồm 6–8 chữ số** (2 lần). PIN trên Internet phải dài hơn PIN cũ (4 số) để khó đoán.
+5. Script tự chuyển dữ liệu cũ trong thư mục `data/` lên Supabase: **bài học đã sửa, bài tập đã giao, kết quả các trận**. Mã PIN cũ thì không chuyển, vì đã đặt PIN mới ở bước 4.
+
+- Chạy lại script bao nhiêu lần cũng được: dữ liệu không bị nhân đôi. Trước khi ghi đè bài học đang có trên Supabase, script sẽ hỏi lại.
+- **Quên mã PIN**, hoặc PIN bị khóa: chạy lại script và chọn đặt lại mã PIN.
+- Sau bước này, mở lại `Chay game.bat` thì game trên máy thầy cô cũng dùng Supabase. Phòng luyện tập trên lớp dùng chung mã PIN mới.
+
+### Bước 4. Đưa game lên Vercel
+
+1. **Đưa thư mục game lên GitHub:**
+   - Đăng ký <https://github.com>. Cài **GitHub Desktop** (<https://desktop.github.com>) và đăng nhập.
+   - Chọn **File → Add local repository** → chọn thư mục game, rồi bấm **Publish repository**. Nên tích **Keep this code private**.
+   - Các file `.env.local`, `.env.server.local` và thư mục `data/` **tự động không bị đưa lên** (đã khai báo trong `.gitignore`). Nếu thầy cô tải file lên bằng trình duyệt thì **đừng kéo các file đó vào**.
+2. Vào <https://vercel.com> → **Sign Up** → chọn **Continue with GitHub**.
+3. Bấm **Add New… → Project**, chọn kho game vừa đưa lên, bấm **Import**. Vercel tự nhận ra đây là dự án Vite.
+4. Mở mục **Environment Variables**, thêm đúng **2 biến** (giống file `.env.local`):
+
+   | Name | Value |
+   |---|---|
+   | `VITE_SUPABASE_URL` | `https://xxxx.supabase.co` |
+   | `VITE_SUPABASE_ANON_KEY` | khóa **công khai** (anon / publishable) |
+
+5. Bấm **Deploy**. Khoảng 1–2 phút sau sẽ có đường link, dạng `https://ten-du-an.vercel.app`.
+6. Mở link, vào **🎓 Giáo viên**, nhập mã PIN. Dòng **"☁️ Đang kết nối máy chủ Internet (Supabase)"** hiện ra là đã xong.
+
+- Sửa bài học, giao bài **không cần** đưa lại lên Vercel: mọi thay đổi lưu trên Supabase, học sinh mở lại game là thấy.
+- Chỉ khi cập nhật **code** của game thì bấm **Push origin** trong GitHub Desktop. Vercel tự cập nhật trang.
+- Nếu Vercel báo lỗi phiên bản Node.js: vào **Settings → Build and Deployment → Node.js Version**, chọn **22.x**.
+
+### Bước 5. Gửi link cho phụ huynh
+
+Tin nhắn mẫu, thầy cô chép và sửa link rồi gửi vào nhóm Zalo của lớp:
+
+```
+📣 Kính gửi quý phụ huynh,
+Lớp mình luyện tiếng Anh ở nhà bằng game Block Quest English (miễn phí, không quảng cáo).
+
+👉 Link game: https://ten-du-an.vercel.app
+
+Cài game lên máy (làm 1 lần):
+• Điện thoại / máy tính bảng Android: mở link bằng Chrome → bấm dấu ⋮ ở góc trên → "Thêm vào màn hình chính" (hoặc "Cài đặt ứng dụng") → Thêm.
+• iPhone / iPad: mở link bằng Safari → bấm nút Chia sẻ (ô vuông có mũi tên lên) → "Thêm vào MH chính" → Thêm.
+• Máy tính: mở link bằng Chrome hoặc Edge → bấm biểu tượng cài đặt ở cuối thanh địa chỉ.
+
+Lần đầu mở, bé bấm "Đặt tên" và ghi đúng họ tên để cô/thầy biết bài của bé.
+📝 Bài tập về nhà: bấm nút "Bài tập" ở trang chủ. Làm xong kết quả tự gửi về cho cô/thầy (mất mạng thì gửi khi có mạng lại).
+👪 Phụ huynh xem kết quả của bé: bấm "Phụ huynh" ở trang chủ.
+```
+
+### Lưu ý khi dùng gói miễn phí của Supabase
+
+- Supabase **tạm dừng dự án sau khoảng 1 tuần không có ai dùng** (VD nghỉ hè, nghỉ Tết). Khi đó game vẫn mở được và chơi được bằng dữ liệu đã lưu trên máy, nhưng không nhận bài mới, không gửi được kết quả. Trong Khu vực giáo viên sẽ có thông báo vàng "Không kết nối được máy chủ Internet".
+- **Cách bật lại:** đăng nhập <https://supabase.com>, mở dự án, bấm **Restore project** (hoặc **Resume**), đợi vài phút. Dữ liệu vẫn còn nguyên. Nên bật lại sớm vì dự án tạm dừng quá lâu có thể không khôi phục được nữa.
+- Kết quả học sinh làm trong lúc dự án tạm dừng vẫn nằm chờ trên máy các em, và tự gửi lên khi dự án chạy lại.
+- **Sai mã PIN 5 lần thì bị khóa**, thời gian khóa tăng dần: 1 phút, 5 phút, 15 phút, rồi 1 giờ. Nếu đang bị khóa (VD có người cố đoán PIN), thầy cô chạy lại script ở bước 3 để đặt PIN mới và mở khóa ngay.
+- Muốn dừng hẳn việc dùng Internet: xóa (hoặc đổi tên) file `.env.local` trên máy thầy cô. Game quay về chạy bằng thư mục `data/` như trước. Dữ liệu trên Supabase không tự chép ngược về `data/`.
 
 ## 🛠️ Dành cho lập trình viên
 
@@ -278,13 +386,46 @@ src/
 ├─ components/              # nút, thanh HP, modal, cài đặt, huy hiệu rank, nhập tên, chọn bài, mã QR
 ├─ stores/                  # Zustand: settings, progress (localStorage), battle (phiêu lưu + solo), room, teacher (PIN)
 ├─ net/transport.ts         # kết nối phòng: Supabase Realtime, hoặc BroadcastChannel (chế độ thử)
-└─ services/                # audio, speech, api (gọi máy chủ giáo viên), results (gửi kết quả trận, hàng đợi offline),
-                            #   classApi (phòng luyện tập: long-poll, đồng bộ đồng hồ với máy chủ),
+└─ services/                # audio, speech, results (gửi kết quả trận, hàng đợi offline),
+                            #   api.ts: lớp truy cập dữ liệu — chọn cloudApi (có .env.local) hoặc máy chủ cục bộ
+                            #   cloudApi.ts: cùng hình dạng với api nhưng gọi RPC Supabase
+                            #   supabase.ts: Supabase client dùng chung (cloudApi + Solo với bạn), nạp khi cần
+                            #   classApi (phòng luyện tập: long-poll, đồng bộ đồng hồ với máy chủ, luôn là máy chủ cục bộ),
                             #   homework (bài tập: lưu trên máy học sinh, chấm điểm, nộp bài, thao tác của giáo viên)
 server/teacherApi.ts        # API chạy cùng Vite (dev + preview): nội dung, PIN, kết quả — lưu ở data/
 server/classRoom.ts         # phòng luyện tập: giữ trong bộ nhớ, chấm điểm theo giờ máy chủ, ghi kết quả vào results.jsonl
 server/homework.ts          # bài tập về nhà: lưu ở data/homework.json
+server/cloudSync.ts         # có .env.local: gửi kết quả phòng lên Supabase (hàng chờ data/cloud-outbox.jsonl), kiểm PIN phòng qua Supabase
+supabase/migrations/0001_init.sql  # bảng + RLS + hàm RPC trên Supabase (dán vào SQL Editor)
+scripts/setup-supabase.mjs  # đặt PIN giáo viên trên Supabase + chuyển dữ liệu data/ lên (cần .env.server.local)
+vercel.json                 # đưa lên Vercel: mọi đường dẫn về index.html, trừ file tĩnh / sw.js / manifest
 ```
+
+**Biến môi trường**
+
+| File | Biến | Dùng ở đâu |
+|---|---|---|
+| `.env.local` (và Environment Variables trên Vercel) | `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY` | trình duyệt + máy chủ cục bộ (đọc bằng `loadEnv`). Không có → chạy như cũ bằng `data/` |
+| `.env.server.local` | `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` | **chỉ** `scripts/setup-supabase.mjs`. Không bao giờ đưa vào biến `VITE_*` hay lên Vercel |
+
+**Supabase** (`supabase/migrations/0001_init.sql`): bảng `app_settings` (1 dòng: hash PIN bằng pgcrypto bcrypt, số lần sai, thời điểm hết khóa), `custom_content` (1 dòng), `homework`, `results` (khóa chính `id` → gửi lại không bị trùng), `results_archive` (thống kê đã "xóa"). Mọi bảng bật RLS và **không có policy nào**: khóa anon không đọc / ghi bảng trực tiếp được, mọi thao tác đi qua hàm RPC `security definer`. Mỗi RPC trả về **một giá trị jsonb** `{ ok, data }` hoặc `{ ok: false, status, error }` (không bị giới hạn 1000 dòng của PostgREST; lỗi PIN không dùng `RAISE` để bộ đếm sai PIN không bị hủy).
+
+| RPC | Cần PIN | Việc |
+|---|---|---|
+| `pin_status()` | | đã đặt PIN chưa (cũng dùng để kiểm tra kết nối) |
+| `get_content()` | | nội dung tùy chỉnh |
+| `list_homework()` | | danh sách bài tập, mới nhất trước |
+| `post_results(jsonb)` | | tối đa 200 trận / lần, mỗi trận ≤ 20KB và đúng dạng `ResultRecord`; trùng id hoặc đã bị xóa → bỏ qua |
+| `device_results(text)` | | 500 trận gần nhất của 1 máy (Góc phụ huynh) |
+| `teacher_login(pin)` | ✔ | kiểm tra PIN |
+| `change_pin(old, new)` | ✔ | PIN mới 6–8 chữ số |
+| `save_content(pin, jsonb)` | ✔ | tối đa ~5MB, phải có mảng `units` |
+| `get_results(pin)` | ✔ | toàn bộ kết quả |
+| `clear_results(pin)` | ✔ | chuyển sang `results_archive` |
+| `create_homework` / `update_homework` / `delete_homework` | ✔ | giống `/api/homework` (làm sạch chuỗi, `due` YYYY-MM-DD, `timerSec` ∈ 0/10/15/20/30/45/60, tối đa 300 bài) |
+| `admin_set_pin(new)` | `service_role` | chỉ script cài đặt: đặt PIN, mở khóa |
+
+Sai PIN 5 lần → khóa 1 / 5 / 15 / 60 phút (tăng dần, đếm trong DB), nhập đúng thì về lại từ đầu.
 
 API của máy chủ giáo viên (`server/teacherApi.ts`): `GET /api/health`, `GET|PUT /api/content`, `POST /api/pin`, `POST /api/login`, `POST|GET|DELETE /api/results`, `GET /api/results/device/:deviceId` (kết quả của 1 máy, cho Góc phụ huynh). Các lệnh ghi và đọc thống kê cần header `x-teacher-pin`.
 
@@ -360,3 +501,4 @@ Mỗi unit cần **ít nhất 4 mẫu câu** để dạng "Chọn câu trả l�
 | GĐ5 | Khu vực giáo viên, quản lý nội dung, nhập Excel, thống kê | ✅ Xong |
 | GĐ6 | Phòng luyện tập của giáo viên (mã phòng, QR, màn hình chiếu) | ✅ Xong |
 | GĐ7 | Bài tập về nhà, phụ huynh xem kết quả | ✅ Xong |
+| GĐ8 | Đưa lên mạng (Vercel + Supabase): luyện tập ở nhà, giáo viên dùng mọi máy | ✅ Xong |

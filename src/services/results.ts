@@ -1,5 +1,5 @@
 // ============================================================
-// Gửi kết quả từng trận về máy chủ giáo viên để thống kê.
+// Gửi kết quả từng trận về Supabase / máy chủ giáo viên để thống kê.
 // Mất mạng → xếp hàng trong trình duyệt và gửi lại sau.
 // Luôn giữ bản sao 500 trận gần nhất trên máy (dùng khi không có máy chủ).
 // ============================================================

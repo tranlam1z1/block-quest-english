@@ -3,7 +3,8 @@
 // ============================================================
 import { useEffect, useState, type ReactNode } from 'react';
 import { Route, Routes, useNavigate } from 'react-router-dom';
-import { useTeacher, validPin } from '../../stores/teacher';
+import { isShared, pinRule, useTeacher, validPin } from '../../stores/teacher';
+import { onlineConfigured } from '../../services/supabase';
 import { useContentVersion } from '../../content';
 import { Button, Modal, TopBar } from '../../components/ui';
 import { ContentPage } from './ContentPage';
@@ -60,6 +61,12 @@ export function TeacherLayout({ title, back = '/teacher', children, right }: { t
 export function ModeNotice() {
   const mode = useTeacher((s) => s.mode);
   if (mode !== 'local') return null;
+  if (onlineConfigured)
+    return (
+      <div className="rounded-2xl border-2 border-amber-300 bg-amber-50 p-3 text-sm font-bold text-amber-800">
+        ⚠️ Không kết nối được máy chủ Internet (Supabase) nên mọi thay đổi chỉ lưu trên <b>trình duyệt này</b>, và thống kê chỉ gồm các trận chơi trên máy này. Thầy cô kiểm tra kết nối mạng rồi tải lại trang. Nếu lâu rồi lớp không dùng game, dự án Supabase có thể đang <b>tạm dừng</b>: xem cách bật lại trong README.
+      </div>
+    );
   return (
     <div className="rounded-2xl border-2 border-amber-300 bg-amber-50 p-3 text-sm font-bold text-amber-800">
       ⚠️ Không thấy máy chủ của game nên mọi thay đổi chỉ lưu trên <b>trình duyệt này</b>, và thống kê chỉ gồm các trận chơi trên máy này. Để học sinh ở mọi máy cùng thấy bài học và gửi kết quả về, hãy mở game bằng file <b>Chay game.bat</b> trên máy tính của thầy cô.
@@ -75,11 +82,12 @@ function PinGate() {
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const creating = !pinSet;
+  const rule = pinRule(mode);
 
   const submit = async () => {
     setError(null);
     if (creating) {
-      if (!validPin(pin)) return setError('Mã PIN phải gồm 4–8 chữ số.');
+      if (!validPin(pin, mode)) return setError(`Mã PIN phải gồm ${rule.text}.`);
       if (pin !== pin2) return setError('Hai lần nhập không giống nhau.');
     }
     setBusy(true);
@@ -102,6 +110,37 @@ function PinGate() {
     />
   );
 
+  // Game trên Internet chưa có PIN: không cho đặt từ trình duyệt (ai mở link trước cũng chiếm được quyền)
+  if (mode === 'cloud' && creating)
+    return (
+      <div className="min-h-full flex flex-col">
+        <TopBar title="🎓 Khu vực giáo viên" back="/" />
+        <div className="w-full max-w-md mx-auto px-4 space-y-4">
+          <div className="panel p-5 space-y-3">
+            <div className="text-center text-5xl">🔐</div>
+            <h2 className="text-center text-xl font-extrabold text-sky-900">Chưa có mã PIN giáo viên</h2>
+            <p className="font-bold text-slate-600">Vì game đang mở trên Internet, mã PIN đầu tiên phải đặt trên máy tính của thầy cô (không đặt ở đây được):</p>
+            <ol className="list-decimal pl-6 space-y-1 text-sm font-bold text-slate-600">
+              <li>
+                Mở thư mục game, chép file <b>.env.server.example</b> thành <b>.env.server.local</b> và điền 2 dòng trong đó.
+              </li>
+              <li>
+                Mở cửa sổ lệnh trong thư mục game, gõ <code className="rounded bg-slate-100 px-1">node scripts/setup-supabase.mjs</code> rồi làm theo hướng dẫn.
+              </li>
+              <li>Quay lại đây và tải lại trang.</li>
+            </ol>
+            <p className="text-sm font-bold text-slate-500">Xem chi tiết trong README, mục "Cho học sinh luyện tập ở nhà".</p>
+            <Button className="w-full" onClick={() => void useTeacher.getState().init()}>
+              🔄 Kiểm tra lại
+            </Button>
+            <Button color="white" className="w-full" onClick={() => nav('/')}>
+              Về trang chủ
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+
   return (
     <div className="min-h-full flex flex-col">
       <TopBar title="🎓 Khu vực giáo viên" back="/" />
@@ -113,7 +152,7 @@ function PinGate() {
             <>
               <h2 className="text-center text-xl font-extrabold text-sky-900">Tạo mã PIN giáo viên</h2>
               <p className="text-sm font-bold text-slate-500">
-                Lần đầu vào, thầy cô đặt một mã PIN (4–8 chữ số) để học sinh không vào sửa được. {mode === 'server' ? 'Mã này dùng chung cho mọi máy.' : 'Mã này chỉ dùng trên trình duyệt này.'}
+                Lần đầu vào, thầy cô đặt một mã PIN ({rule.text}) để học sinh không vào sửa được. {isShared(mode) ? 'Mã này dùng chung cho mọi máy.' : 'Mã này chỉ dùng trên trình duyệt này.'}
               </p>
               {input(pin, setPin, 'Mã PIN mới', true)}
               {input(pin2, setPin2, 'Nhập lại mã PIN')}
@@ -125,7 +164,7 @@ function PinGate() {
             </>
           )}
           {error && <div className="rounded-xl bg-rose-50 p-2 text-center font-bold text-rose-600">{error}</div>}
-          <Button className="w-full text-xl" disabled={busy || pin.length < 4} onClick={submit}>
+          <Button className="w-full text-xl" disabled={busy || pin.length < rule.min} onClick={submit}>
             {creating ? 'Tạo mã PIN' : 'Vào'}
           </Button>
           <Button color="white" className="w-full" onClick={() => nav('/')}>
@@ -162,7 +201,11 @@ function TeacherHome() {
       </div>
       <div className="panel p-4 flex flex-wrap items-center gap-2">
         <div className="flex-1 min-w-[200px] text-sm font-bold text-slate-500">
-          {mode === 'server' ? '✅ Đang kết nối máy chủ của game: bài học và thống kê dùng chung cho mọi máy.' : '💻 Đang lưu trên trình duyệt này.'}
+          {mode === 'cloud'
+            ? '☁️ Đang kết nối máy chủ Internet (Supabase): bài học, bài tập và thống kê dùng chung cho mọi máy, kể cả máy ở nhà của học sinh.'
+            : mode === 'server'
+              ? '✅ Đang kết nối máy chủ của game: bài học và thống kê dùng chung cho mọi máy.'
+              : '💻 Đang lưu trên trình duyệt này.'}
         </div>
         <Button color="white" onClick={() => setPinOpen(true)}>
           🔑 Đổi mã PIN
@@ -184,6 +227,7 @@ function TeacherHome() {
 
 function ChangePinModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   const changePin = useTeacher((s) => s.changePin);
+  const mode = useTeacher((s) => s.mode);
   const [oldPin, setOld] = useState('');
   const [pin, setPin] = useState('');
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
@@ -198,7 +242,7 @@ function ChangePinModal({ open, onClose }: { open: boolean; onClose: () => void 
     <Modal open onClose={onClose} title="🔑 Đổi mã PIN">
       <div className="space-y-3">
         {field(oldPin, setOld, 'Mã PIN hiện tại')}
-        {field(pin, setPin, 'Mã PIN mới (4–8 chữ số)')}
+        {field(pin, setPin, `Mã PIN mới (${pinRule(mode).text})`)}
         {msg && <div className={`rounded-xl p-2 text-center font-bold ${msg.ok ? 'bg-green-50 text-green-700' : 'bg-rose-50 text-rose-600'}`}>{msg.text}</div>}
         <Button
           className="w-full"

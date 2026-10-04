@@ -5,7 +5,7 @@ import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../../services/api';
 import { clearLocalResults, localResults, type ResultMode, type ResultRecord } from '../../services/results';
-import { useTeacher } from '../../stores/teacher';
+import { isShared, useTeacher } from '../../stores/teacher';
 import { Button } from '../../components/ui';
 import { TeacherLayout } from './TeacherApp';
 import { pctClass } from './widgets';
@@ -33,7 +33,7 @@ export function StatsPage() {
     setAll(null);
     setError(null);
     (async () => {
-      if (mode === 'server' && pin) {
+      if (isShared(mode) && pin) {
         const r = await api.getResults(pin);
         if (!alive) return;
         if (r.ok && r.data) setAll(r.data as ResultRecord[]);
@@ -56,8 +56,8 @@ export function StatsPage() {
   const sum = summary(list);
 
   const clear = async () => {
-    if (!confirm('Xóa toàn bộ thống kê? (Máy chủ vẫn giữ một bản sao lưu trong thư mục data.)')) return;
-    if (mode === 'server' && pin) {
+    if (!confirm(mode === 'cloud' ? 'Xóa toàn bộ thống kê? (Supabase vẫn giữ một bản sao lưu trong bảng results_archive.)' : 'Xóa toàn bộ thống kê? (Máy chủ vẫn giữ một bản sao lưu trong thư mục data.)')) return;
+    if (isShared(mode) && pin) {
       const r = await api.clearResults(pin);
       if (!r.ok) return setError(r.error ?? 'Không xóa được');
     } else clearLocalResults();
@@ -117,7 +117,7 @@ export function StatsPage() {
             <div className="panel p-6 text-center font-bold text-slate-500">
               Chưa có trận nào trong khoảng thời gian này.
               <br />
-              Kết quả được gửi về mỗi khi học sinh chơi xong một trận{mode === 'server' ? ' trên bất kỳ máy nào mở game từ máy tính này' : ''}.
+              Kết quả được gửi về mỗi khi học sinh chơi xong một trận{mode === 'cloud' ? ' trên bất kỳ máy nào mở game, ở lớp hay ở nhà (máy mất mạng thì gửi khi có mạng lại)' : mode === 'server' ? ' trên bất kỳ máy nào mở game từ máy tính này' : ''}.
             </div>
           ) : (
             <>

@@ -47,7 +47,7 @@ export function HomePage() {
             <span className="block text-4xl sm:text-6xl font-extrabold text-white drop-shadow-[0_4px_0_rgba(14,116,144,0.9)]">Block Quest</span>
             <span className="block text-3xl sm:text-5xl font-extrabold text-amber-300 drop-shadow-[0_4px_0_rgba(146,64,14,0.9)]">English</span>
           </h1>
-          <p className="mt-2 text-sky-900 font-bold text-center">Đánh quái – Học tiếng Anh – Gom Ngọc Rồng!</p>
+          <p className="mt-2 text-sky-900 font-bold text-center">Luyện tập và học tiếng Anh!</p>
           <div className="mt-3 w-full max-w-md h-56 sm:h-72 rounded-3xl overflow-hidden border-4 border-white shadow-xl bg-sky-100">
             <Suspense fallback={<div className="h-full grid place-items-center text-sky-700 font-bold">Đang tải…</div>}>
               <PreviewScene />

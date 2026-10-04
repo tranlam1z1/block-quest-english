@@ -1,6 +1,6 @@
 // ============================================================
 // Bài tập về nhà
-//  - Giáo viên giao bài (bộ câu hỏi sinh sẵn + hạn nộp) → lưu trên máy chủ (data/homework.json).
+//  - Giáo viên giao bài (bộ câu hỏi sinh sẵn + hạn nộp) → lưu trên Supabase hoặc máy chủ cục bộ (data/homework.json).
 //    Không có máy chủ → lưu trên trình duyệt này (giáo viên và học sinh dùng chung máy).
 //  - Máy học sinh tải danh sách về và lưu lại → làm được cả khi mất mạng.
 //    Kết quả gửi về thống kê như các trận khác (mode "homework", hàng đợi offline).

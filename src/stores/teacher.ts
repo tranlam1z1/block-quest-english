@@ -1,16 +1,27 @@
 // ============================================================
 // Đăng nhập Khu vực giáo viên bằng mã PIN.
-//  - Có máy chủ: PIN lưu (đã băm) trên máy chủ, dùng chung cho mọi máy.
-//  - Không có máy chủ: PIN lưu (đã băm) trong trình duyệt này.
+//  - 'cloud':  PIN lưu (đã băm) trên Supabase, dùng chung cho mọi máy có Internet.
+//              PIN lần đầu đặt bằng script trên máy thầy cô (không đặt từ trình duyệt).
+//  - 'server': PIN lưu (đã băm) trên máy chủ cục bộ, dùng chung cho mọi máy trong lớp.
+//  - 'local':  không kết nối được → PIN lưu (đã băm) trong trình duyệt này.
 // PIN được giữ trong phiên (sessionStorage) để tải lại trang không phải nhập lại.
 // ============================================================
 import { create } from 'zustand';
-import { api, checkServer } from '../services/api';
+import { api, checkServer, storageKind } from '../services/api';
+import { CLOUD_PIN_HELP } from '../services/cloudApi';
 
 const SESSION_KEY = 'bqe-teacher-session';
 const LOCAL_PIN_KEY = 'bqe-teacher-pin';
 
-export const validPin = (pin: string) => /^\d{4,8}$/.test(pin);
+export type TeacherMode = 'cloud' | 'server' | 'local';
+
+/** Game công khai trên Internet nên PIN trên Supabase dài hơn (6–8 chữ số) */
+export const pinRule = (mode: TeacherMode | null) => (mode === 'cloud' ? { min: 6, text: '6–8 chữ số' } : { min: 4, text: '4–8 chữ số' });
+
+export const validPin = (pin: string, mode: TeacherMode | null = null) => new RegExp(`^\\d{${pinRule(mode).min},8}$`).test(pin);
+
+/** Dữ liệu dùng chung cho mọi máy (Supabase hoặc máy chủ cục bộ), không chỉ trình duyệt này */
+export const isShared = (mode: TeacherMode | null) => mode === 'cloud' || mode === 'server';
 
 /** Băm chuỗi. crypto.subtle chỉ có trên https / localhost → khi mở qua địa chỉ mạng LAN dùng hàm băm đơn giản */
 async function sha256(text: string) {
@@ -50,8 +61,8 @@ const ss = {
 };
 
 interface TeacherState {
-  /** 'server' = có máy chủ giáo viên; 'local' = chỉ lưu trên trình duyệt này; null = đang kiểm tra */
-  mode: 'server' | 'local' | null;
+  /** 'cloud' = Supabase; 'server' = máy chủ giáo viên; 'local' = chỉ lưu trên trình duyệt này; null = đang kiểm tra */
+  mode: TeacherMode | null;
   pinSet: boolean;
   /** PIN của phiên đăng nhập (null = chưa đăng nhập) */
   pin: string | null;
@@ -74,7 +85,7 @@ export const useTeacher = create<TeacherState>()((set, get) => ({
       const saved = ss.get();
       // PIN trong phiên còn đúng không (có thể giáo viên vừa đổi PIN ở máy khác)
       const still = saved ? (await api.login(saved)).ok : false;
-      set({ mode: 'server', pinSet, pin: still ? saved : null });
+      set({ mode: storageKind, pinSet, pin: still ? saved : null });
       if (!still) ss.set(null);
     } else {
       const hash = localStorage.getItem(LOCAL_PIN_KEY);
@@ -84,7 +95,7 @@ export const useTeacher = create<TeacherState>()((set, get) => ({
   },
 
   login: async (pin) => {
-    if (get().mode === 'server') {
+    if (isShared(get().mode)) {
       const r = await api.login(pin);
       if (!r.ok) return r.error ?? 'Không đăng nhập được';
     } else if ((await localHash(pin)) !== localStorage.getItem(LOCAL_PIN_KEY)) return 'Mã PIN không đúng';
@@ -94,8 +105,11 @@ export const useTeacher = create<TeacherState>()((set, get) => ({
   },
 
   setupPin: async (pin) => {
-    if (!validPin(pin)) return 'Mã PIN phải gồm 4–8 chữ số';
-    if (get().mode === 'server') {
+    const mode = get().mode;
+    // Game công khai: ai mở link trước cũng có thể chiếm quyền → PIN đầu tiên chỉ đặt bằng script
+    if (mode === 'cloud') return CLOUD_PIN_HELP;
+    if (!validPin(pin, mode)) return `Mã PIN phải gồm ${pinRule(mode).text}`;
+    if (mode === 'server') {
       const r = await api.setPin(pin);
       if (!r.ok) return r.error ?? 'Không đặt được PIN';
     } else localStorage.setItem(LOCAL_PIN_KEY, await localHash(pin));
@@ -105,8 +119,9 @@ export const useTeacher = create<TeacherState>()((set, get) => ({
   },
 
   changePin: async (oldPin, pin) => {
-    if (!validPin(pin)) return 'Mã PIN mới phải gồm 4–8 chữ số';
-    if (get().mode === 'server') {
+    const mode = get().mode;
+    if (!validPin(pin, mode)) return `Mã PIN mới phải gồm ${pinRule(mode).text}`;
+    if (isShared(mode)) {
       const r = await api.setPin(pin, oldPin);
       if (!r.ok) return r.error ?? 'Không đổi được PIN';
     } else {

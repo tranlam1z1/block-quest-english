@@ -6,6 +6,7 @@
 //    (để thử nghiệm khi chưa cấu hình Supabase).
 // ============================================================
 import type { Avatar } from '../game/cosmetics';
+import { getSupabase, onlineConfigured } from '../services/supabase';
 
 /** Thông tin công khai của 1 người trong phòng */
 export interface PeerInfo {
@@ -37,11 +38,8 @@ export interface Transport {
   close: () => void;
 }
 
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string | undefined;
-const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined;
-
 /** Đã cấu hình máy chủ Supabase (file .env.local) chưa */
-export const onlineConfigured = !!(SUPABASE_URL && SUPABASE_KEY);
+export { onlineConfigured };
 
 const channelName = (code: string) => `bqe-room-${code}`;
 
@@ -54,11 +52,11 @@ class SupabaseTransport implements Transport {
   private closed = false;
 
   connect(code: string, me: PeerInfo, h: TransportHandlers) {
-    // Nạp thư viện khi cần để trang chủ tải nhanh hơn
-    import('@supabase/supabase-js')
-      .then(({ createClient }) => {
+    // Dùng chung 1 client với cloudApi (services/supabase.ts), thư viện nạp khi cần
+    getSupabase()
+      .then((client) => {
         if (this.closed) return;
-        this.client = createClient(SUPABASE_URL!, SUPABASE_KEY!, { auth: { persistSession: false } });
+        this.client = client;
         const ch = this.client.channel(channelName(code), { config: { broadcast: { self: false }, presence: { key: me.id } } });
         this.channel = ch;
         ch.on('presence', { event: 'sync' }, () => {

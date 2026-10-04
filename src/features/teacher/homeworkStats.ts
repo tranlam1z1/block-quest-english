@@ -7,7 +7,7 @@ import writeXlsxFile, { type SheetData } from 'write-excel-file/browser';
 import { api } from '../../services/api';
 import { localResults, type ResultRecord } from '../../services/results';
 import { fmtDate, fmtGrade, homeworkAdmin, type Homework } from '../../services/homework';
-import { useTeacher } from '../../stores/teacher';
+import { isShared, useTeacher } from '../../stores/teacher';
 import { fmtTime, studentKey, studentName } from './stats';
 
 /**
@@ -24,7 +24,7 @@ export function useTeacherData(autoMs = 0) {
     let alive = true;
     setError(null);
     (async () => {
-      const [r, h] = await Promise.all([mode === 'server' && pin ? api.getResults(pin) : Promise.resolve({ ok: true, data: localResults() as unknown[], error: undefined }), homeworkAdmin.list()]);
+      const [r, h] = await Promise.all([isShared(mode) && pin ? api.getResults(pin) : Promise.resolve({ ok: true, data: localResults() as unknown[], error: undefined }), homeworkAdmin.list()]);
       if (!alive) return;
       if (r.ok && r.data) setResults((r.data as ResultRecord[]).slice().sort((a, b) => a.at.localeCompare(b.at)));
       else setError(r.error ?? 'Không tải được kết quả');

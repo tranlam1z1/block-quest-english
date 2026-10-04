@@ -11,6 +11,7 @@ import { QuestionDeck } from '../../game/questions/buildQuiz';
 import { getTypeInfo, QUESTION_TYPES, type Question, type QuestionType } from '../../game/questions/types';
 import type { MonsterTier } from '../../game/monsters';
 import { classApi, hostSession, useClassRoom, useServerClock, type HostView } from '../../services/classApi';
+import { checkLocalServer } from '../../services/api';
 import { unitLabel } from '../../services/results';
 import { speak, speechSupported } from '../../services/speech';
 import { playSfx } from '../../services/audio';
@@ -88,6 +89,8 @@ export function ClassSetupPage() {
   const nav = useNavigate();
   const pin = useTeacher((s) => s.pin)!;
   const mode = useTeacher((s) => s.mode);
+  // Phòng luyện tập luôn chạy trên máy chủ cục bộ (Chay game.bat), kể cả khi bài học lưu trên Supabase
+  const [localServer, setLocalServer] = useState<boolean | null>(mode === 'server' ? true : null);
   const [o, setO] = useState(loadOptions);
   const [pickOpen, setPickOpen] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -95,6 +98,15 @@ export function ClassSetupPage() {
   const unit = getUnit(o.unitId);
   const desc = unit ? describeSelection({ bookId: unit.bookId, gradeId: unit.gradeId, unitId: unit.id }) : null;
   const set = (patch: Partial<ClassOptions>) => setO((x) => ({ ...x, ...patch }));
+
+  useEffect(() => {
+    if (localServer !== null) return;
+    let alive = true;
+    void checkLocalServer(true).then((r) => alive && setLocalServer(r.ok));
+    return () => {
+      alive = false;
+    };
+  }, [localServer]);
 
   const open = async () => {
     setBusy(true);
@@ -121,11 +133,29 @@ export function ClassSetupPage() {
     nav(`/teacher/class/${r.data.code}`);
   };
 
-  if (mode !== 'server')
+  if (localServer === null)
     return (
       <TeacherLayout title="🏫 Phòng luyện tập">
-        <div className="panel p-5 font-bold text-slate-600">
-          Phòng luyện tập cần <b>máy chủ của game</b> để các máy học sinh kết nối vào. Thầy cô mở game bằng file <b>Chay game.bat</b> trên máy tính của mình rồi vào lại mục này.
+        <div className="panel p-5 text-center font-bold text-sky-800">Đang kiểm tra máy chủ của game…</div>
+      </TeacherLayout>
+    );
+
+  if (!localServer)
+    return (
+      <TeacherLayout title="🏫 Phòng luyện tập">
+        <div className="panel p-5 space-y-3 font-bold text-slate-600">
+          <p>
+            Phòng luyện tập trên lớp chỉ dùng được khi mở game bằng <b>Chay game.bat</b> trên máy thầy cô.
+          </p>
+          <p className="text-sm text-slate-500">
+            {mode === 'cloud' || mode === 'local'
+              ? 'Các máy học sinh kết nối vào máy tính của thầy cô qua cùng mạng Wi-Fi, nên phòng không mở được từ đường link trên Internet.'
+              : 'Máy chủ của game là để các máy học sinh kết nối vào qua cùng mạng Wi-Fi.'}{' '}
+            Thầy cô chạy file đó trên máy tính của mình rồi vào lại mục này.
+          </p>
+          <Button color="white" onClick={() => setLocalServer(null)}>
+            🔄 Kiểm tra lại
+          </Button>
         </div>
       </TeacherLayout>
     );

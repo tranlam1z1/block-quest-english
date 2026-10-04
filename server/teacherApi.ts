@@ -18,14 +18,20 @@
 //   /api/class/...                  → phòng luyện tập của giáo viên (xem server/classRoom.ts)
 //   /api/homework/...               → bài tập về nhà (xem server/homework.ts)
 // [PIN] = cần header "x-teacher-pin"
+//
+// Có file .env.local (Supabase): bài học, bài tập, thống kê của trình duyệt lưu trên Supabase.
+// Máy chủ này vẫn chạy phòng luyện tập; kết quả phòng được gửi thêm lên Supabase và
+// PIN mở phòng được kiểm tra trên Supabase (xem server/cloudSync.ts).
+// Khi build (npm run build, Vercel) plugin không làm gì.
 // ============================================================
 import { appendFileSync, existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { randomBytes, scryptSync, timingSafeEqual } from 'node:crypto';
 import type { IncomingMessage, ServerResponse } from 'node:http';
-import type { Plugin } from 'vite';
+import { loadEnv, type Plugin } from 'vite';
 import { handleClass } from './classRoom.ts';
 import { handleHomework } from './homework.ts';
+import { createCloudSync, type CloudSync } from './cloudSync.ts';
 
 type Next = (err?: unknown) => void;
 
@@ -34,20 +40,30 @@ const MAX_RESULT = 20 * 1024;
 
 export function teacherApi(): Plugin {
   let dataDir = '';
+  let cloud: CloudSync | null = null;
   const handler = (req: IncomingMessage, res: ServerResponse, next: Next) => {
     if (!req.url?.startsWith('/api/')) return next();
-    handle(dataDir, req, res).catch((e) => send(res, 500, { error: String(e) }));
+    handle(dataDir, cloud, req, res).catch((e) => send(res, 500, { error: String(e) }));
+  };
+  const start = () => {
+    if (!cloud) return;
+    mkdirSync(dataDir, { recursive: true });
+    cloud.start();
   };
   return {
     name: 'bqe-teacher-api',
     configResolved(config) {
       dataDir = join(config.root, 'data');
+      const env = loadEnv(config.mode, config.envDir || config.root, 'VITE_');
+      if (env.VITE_SUPABASE_URL && env.VITE_SUPABASE_ANON_KEY) cloud = createCloudSync({ url: env.VITE_SUPABASE_URL, key: env.VITE_SUPABASE_ANON_KEY }, dataDir);
     },
     configureServer(server) {
       server.middlewares.use(handler);
+      start();
     },
     configurePreviewServer(server) {
       server.middlewares.use(handler);
+      start();
     },
   };
 }
@@ -137,7 +153,7 @@ const PIN_ERRORS = {
 
 // ---------------- Xử lý yêu cầu ----------------
 
-async function handle(dataDir: string, req: IncomingMessage, res: ServerResponse) {
+async function handle(dataDir: string, cloud: CloudSync | null, req: IncomingMessage, res: ServerResponse) {
   mkdirSync(dataDir, { recursive: true });
   const url = new URL(req.url!, 'http://x');
   const path = url.pathname;
@@ -153,8 +169,18 @@ async function handle(dataDir: string, req: IncomingMessage, res: ServerResponse
     return false;
   };
 
-  const saveResults = (records: unknown[]) => appendFileSync(resultsFile, records.map((r) => JSON.stringify(r)).join('\n') + '\n', 'utf8');
-  if (await handleClass(req, res, path, url, { readBody, requirePin, saveResults })) return;
+  const saveResults = (records: unknown[]) => {
+    appendFileSync(resultsFile, records.map((r) => JSON.stringify(r)).join('\n') + '\n', 'utf8');
+    cloud?.queueResults(records);
+  };
+  /** PIN mở phòng luyện tập: có Supabase thì dùng PIN trên Supabase (giống Khu vực giáo viên) */
+  const requireClassPin = async () => {
+    const r = cloud ? await cloud.verifyPin(req.headers['x-teacher-pin']) : null;
+    if (!r) return requirePin();
+    if (!r.ok) send(res, r.status, { error: r.error });
+    return r.ok;
+  };
+  if (await handleClass(req, res, path, url, { readBody, requirePin: requireClassPin, saveResults })) return;
   if (await handleHomework(req, res, path, { dataDir, readBody, requirePin, send, readJson, writeAtomic })) return;
 
   /** Đọc results.jsonl, bỏ bản ghi trùng (khi máy học sinh gửi lại do mất mạng) */

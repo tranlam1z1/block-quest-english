@@ -1,13 +1,19 @@
 // ============================================================
-// Gọi API của máy chủ giáo viên (server/teacherApi.ts).
-// Khi không có máy chủ (VD mở bản cài offline), các hàm trả về null / false
+// Lớp truy cập dữ liệu dùng chung: bài học, bài tập về nhà, kết quả, PIN giáo viên.
+// Hai cách lưu, cùng một "hình dạng" (tên hàm, tham số, kiểu { ok, status, data, error }):
+//  - Có Supabase (.env.local) → services/cloudApi.ts (gọi RPC qua Internet)
+//  - Không có                  → máy chủ cục bộ server/teacherApi.ts (thư mục data/ trên máy giáo viên)
+// Khi không kết nối được (mất mạng, mở bản cài offline), các hàm trả về ok: false
 // và game tự dùng dữ liệu lưu trên máy.
+// Phòng luyện tập trên lớp luôn dùng máy chủ cục bộ (services/classApi.ts).
 // ============================================================
+import { checkCloud, cloudApi, isCloudOk, type ApiResult } from './cloudApi';
+import { onlineConfigured } from './supabase';
 
 let serverOk: boolean | null = null;
 let pinSet = false;
 
-async function call<T>(path: string, init: RequestInit = {}, timeoutMs = 4000): Promise<{ ok: boolean; status: number; data: T | null; error?: string }> {
+async function call<T>(path: string, init: RequestInit = {}, timeoutMs = 4000): Promise<ApiResult<T>> {
   const ctrl = new AbortController();
   const t = setTimeout(() => ctrl.abort(), timeoutMs);
   try {
@@ -24,8 +30,8 @@ async function call<T>(path: string, init: RequestInit = {}, timeoutMs = 4000): 
   }
 }
 
-/** Kiểm tra máy chủ giáo viên có chạy không (ghi nhớ kết quả) */
-export async function checkServer(force = false) {
+/** Kiểm tra máy chủ cục bộ của giáo viên (Chay game.bat) có chạy không (ghi nhớ kết quả) */
+export async function checkLocalServer(force = false) {
   if (serverOk !== null && !force) return { ok: serverOk, pinSet };
   const r = await call<{ ok: boolean; pinSet: boolean }>('/api/health', {}, 2500);
   serverOk = r.ok;
@@ -33,11 +39,9 @@ export async function checkServer(force = false) {
   return { ok: serverOk, pinSet };
 }
 
-export const isServerOk = () => serverOk === true;
-
 const pinHeader = (pin: string) => ({ 'x-teacher-pin': pin });
 
-export const api = {
+const localApi = {
   getContent: () => call<unknown>('/api/content', {}, 2500),
   saveContent: (pin: string, content: unknown) => call<{ ok: boolean }>('/api/content', { method: 'PUT', headers: pinHeader(pin), body: JSON.stringify(content) }, 15000),
   setPin: (pin: string, oldPin?: string) => call<{ ok: boolean }>('/api/pin', { method: 'POST', body: JSON.stringify({ pin, oldPin }) }),
@@ -51,3 +55,13 @@ export const api = {
   updateHomework: (pin: string, id: string, patch: unknown) => call<unknown>(`/api/homework/${id}`, { method: 'PATCH', headers: pinHeader(pin), body: JSON.stringify(patch) }),
   deleteHomework: (pin: string, id: string) => call<{ ok: boolean }>(`/api/homework/${id}`, { method: 'DELETE', headers: pinHeader(pin) }),
 };
+
+/** Nơi lưu dữ liệu dùng chung: 'cloud' = Supabase, 'server' = máy chủ cục bộ */
+export const storageKind: 'cloud' | 'server' = onlineConfigured ? 'cloud' : 'server';
+
+/** Kiểm tra kết nối tới nơi lưu dữ liệu (ghi nhớ kết quả) */
+export const checkServer: (force?: boolean) => Promise<{ ok: boolean; pinSet: boolean }> = onlineConfigured ? checkCloud : checkLocalServer;
+
+export const isServerOk = () => (onlineConfigured ? isCloudOk() : serverOk === true);
+
+export const api: typeof localApi = onlineConfigured ? cloudApi : localApi;

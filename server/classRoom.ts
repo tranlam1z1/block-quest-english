@@ -341,8 +341,8 @@ export function lanAddresses() {
 
 export interface ClassApiDeps {
   readBody: (req: IncomingMessage, limit?: number) => Promise<unknown>;
-  /** Kiểm tra PIN giáo viên (tự trả lỗi nếu sai) */
-  requirePin: () => boolean;
+  /** Kiểm tra PIN giáo viên (tự trả lỗi nếu sai). Có Supabase thì kiểm tra qua Internet nên có thể chờ. */
+  requirePin: () => boolean | Promise<boolean>;
   /** Ghi kết quả vào thống kê */
   saveResults: (records: unknown[]) => void;
 }
@@ -400,7 +400,7 @@ export async function handleClass(req: IncomingMessage, res: ServerResponse, pat
   }
 
   if (path === '/api/class' && method === 'POST') {
-    if (!deps.requirePin()) return true;
+    if (!(await deps.requirePin())) return true;
     const body = (await deps.readBody(req, 2 * 1024 * 1024)) as { unitId?: unknown; unit?: unknown; questions?: unknown; limitMs?: unknown } | null;
     if (!body || typeof body.unitId !== 'string' || !validQuestions(body.questions)) {
       send(res, 400, { error: 'Bộ câu hỏi không hợp lệ' });

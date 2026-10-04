@@ -3,7 +3,7 @@
 //               + nội dung giáo viên sửa / thêm trong Khu vực giáo viên.
 //
 // - Nội dung có sẵn: tự động nạp mọi book.json và unit-*.json (thêm file là có, không sửa code).
-// - Nội dung tùy chỉnh: lưu trên máy chủ (data/custom-content.json), nạp khi mở game,
+// - Nội dung tùy chỉnh: lưu trên Supabase hoặc máy chủ cục bộ (data/custom-content.json), nạp khi mở game,
 //   đồng thời lưu bản sao trong trình duyệt để chơi offline.
 //   Unit tùy chỉnh trùng id với unit có sẵn sẽ thay thế unit đó.
 // ============================================================
